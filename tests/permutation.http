@@ -1,0 +1,8 @@
+POST /permutation
+Host: localhost:8000
+Content-Type: application/json
+Cookie: CALC_SESSID=gpnH8jiOvPhrwM86Bk75XA
+
+{
+	"value": [1, 2, 3, 4, 5]
+}

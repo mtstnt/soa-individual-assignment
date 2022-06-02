@@ -5,13 +5,30 @@ class CalculationService:
 	name = "calculation_service"
 
 	@rpc
-	def permutation(value: list[any]) -> dict:
-		if value is not list:
+	def permutation(self, value: list[any]) -> dict:
+		if type(value) != list:
 			return { "error": 1, "message": "Permutation parameter must be a list!" }
-		return it.permutations(value)
+		results = []
+		for i in range(1, len(value) + 1):
+			comb = list(it.permutations(value, i))
+			for j in comb:
+				results.append(j)
+		return { 
+			"error": 0,
+			"permutations": results
+		}
 
 	@rpc
-	def combination(value: list[any]) -> dict:
-		if value is not list:
+	def combination(self, value: list[any]) -> dict:
+		if type(value) != list:
 			return { "error": 1, "message": "Combination parameter must be a list!" }
-		return it.combinations(value)
+
+		results = []
+		for i in range(1, len(value) + 1):
+			comb = list(it.combinations(value, i))
+			for j in comb:
+				results.append(j)
+		return { 
+			"error": 0,
+			"combinations": results
+		}

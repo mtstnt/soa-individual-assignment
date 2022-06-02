@@ -10,12 +10,7 @@ Sistem terdiri dari 3 service, yaitu:
 2. User Service untuk melakukan operasi terkait user (login, register)
 3. Calculation Service untuk melakukan operasi permutasi dan kombinasi.
 
-Menggunakan microservice framework **Nameko** yang menggunakan RPC over AMQP untuk melakukan RPC antar service-service. Hal ini memungkinkan untuk scaling satu atau banyak service dengan menambahkan node baru untuk service itu yang akan otomatis menjadi cosnumer dari message queue service tersebut (dilakukan oleh Nameko).
-
-***Placeholder Diagram***
-
-
-***Hiyaaa***
+Menggunakan microservice framework **Nameko** yang menggunakan RPC over AMQP untuk memanggil dan mendapatkan return value dari fungsi di service lain.
 
 <br>
 
@@ -32,4 +27,9 @@ Menggunakan microservice framework **Nameko** yang menggunakan RPC over AMQP unt
 ### **Steps**:
 1. Install dependencies dengan `pipenv install` apabila menggunakan pipenv, atau pip install -r requirements.txt untuk menginstall dependency dengan pip.
 2. Jalankan script di `scripts/run.sh` atau `scripts/run.bat` untuk Windows. (run.bat sudah tested.)
-3. Lakukan test request di `localhost:8000`. Lihat directory `tests` untuk melihat contoh request.
+3. Lakukan test request di `localhost:8000`. Lihat directory `tests` untuk melihat contoh request yang bisa dilakukan.
+
+### Notes:
+- Untuk request login dan register, copy hasil token yang didapat ke HTTP header Cookie seperti di `tests/combination.http` atau `tests/permutation.http`.  
+Tested menggunakan extension HTTP Client VSCode: [humao.rest-client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) **dengan setting `Rest-client: Remember Cookies For Subsequent Requests` TIDAK dicentang.**  
+Testing dengan Insomnia akan segera dilakukan ^^.

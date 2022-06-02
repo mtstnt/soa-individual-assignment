@@ -1,39 +1,40 @@
 from datetime import timedelta
 from nameko.rpc import rpc
-import redis
+
 import bcrypt
 import secrets
-import pickle
+import db
 
 class UserService:
     name = "user_service"
 
-    redis_client: redis.Redis
-
-    def __init__(self) -> None:
-        self.redis_client = redis.Redis(host="localhost", port=6379, db=0)
+    userdb = db.Database()
 
     @rpc
     def login(self, username, password) -> dict: 
-        passwd = self.redis_client.get(f"USER:{username}")
-        if passwd is None:
-            return { "error": 1, "message": "Invalid credentials" }
-        
-        if not bcrypt.checkpw(password, passwd):
-            return { "error": 1, "message": "Invalid credentials" }
+        row = self.userdb.find_user(username)
+        print(f"{row['id']} {row['username']} {row['password']}")
+        if not row:
+            return { "error": 1, "message": "User not found!" }
 
-        # Correct login info
+        row_passwd = row['password']
+        if not bcrypt.checkpw(password.encode(), row_passwd):
+            return { "error": 1, "message": "Invalid credentials!" }
+        
         token = secrets.token_urlsafe(16)
-        self.redis_client.set(f"SESS:{token}", username, ex=3 * timedelta.seconds)
-        return { "error": 0, "message": "Successfully logged in" }
+        return { "error": 0, "message": "Successfully logged in", "user_id": row['id'], "token": token }
 
     @rpc
-    def register(self, username, password):
-        user_count = self.redis_client.exists(f"USER:{username}")
+    def register(self, username: str, password: str):
+        user_count = self.userdb.get_user_count(username)
 
-        if user_count == 0:
-            salt = bcrypt.gensalt()
-            self.redis_client.set(f"USER:{username}", bcrypt.hashpw(password, salt))
-            return { "error": 0, "message": f"Successfully registered user {username}" }
+        if user_count > 0:
+            return { "error": 1, "message": f"User with username {username} already exists" }
 
-        return { "error": 1, "message": f"User with username {username} already exists" }
+        salt = bcrypt.gensalt()
+        hashed_pw = bcrypt.hashpw(password.encode(), salt)
+        if not self.userdb.insert_user(username, hashed_pw):
+            return { "error": 1, "message": "Failed to insert user" }
+            
+        token = secrets.token_urlsafe(16)
+        return { "error": 0, "message": f"Successfully registered user {username}", "token": token }
