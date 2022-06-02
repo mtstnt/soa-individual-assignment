@@ -19,7 +19,7 @@ docker run --rm -d --name rabbitmq-server -p 5672:5672 rabbitmq:3.9.17-alpine
 echo "Starting services in background: "
 echo "User Service..."
 cd user_service
-nameko run main > user_service.log &
+nameko run main &
 launched_pids+=($!)
 
 cd ..
@@ -27,7 +27,7 @@ cd ..
 # Start calculation service
 echo "Calculation Service..."
 cd calculation_service
-nameko run main > calculation_service.log &
+nameko run main &
 launched_pids+=($!)
 
 cd ..
@@ -35,7 +35,7 @@ cd ..
 # Start gateway service
 echo "Gateway Service..."
 cd gateway_service
-nameko run main > gateway_service.log &
+nameko run main &
 launched_pids+=($!)
 
 cd ..
